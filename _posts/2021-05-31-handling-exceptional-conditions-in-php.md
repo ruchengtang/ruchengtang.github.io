@@ -1,5 +1,5 @@
 ---
-title: "PHP 中错误处理"
+title: "PHP 错误处理"
 subtitle: "不要给调用你代码的人增加麻烦"
 layout: post
 author: "Rucheng Tang"
