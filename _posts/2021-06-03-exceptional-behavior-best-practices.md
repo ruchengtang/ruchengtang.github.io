@@ -1,5 +1,5 @@
 ---
-title: "组织 PHP 异常"
+title: "PHP 处理异常行为的最佳实践"
 subtitle: "从组织结构开始，以免日后进行昂贵的重构"
 layout: post
 author: "Rucheng Tang"
