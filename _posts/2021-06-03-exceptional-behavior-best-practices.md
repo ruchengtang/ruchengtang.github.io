@@ -26,7 +26,7 @@ if (!$user) {
 自定义异常类型
 ------------
 
-上面这个例子的主要问题是抛出的异常类型没有丰富的语义，我们必须阅读整个消息才能理解该异常的目的。另外，抛出的异常类型是基础异常，`\Exception` 是所有异常的基类，调用者很难根据异常类型去做相应的处理。解决方案是为每个出现异常情况的整体逻辑定义自定义异常类型，其名称一定要语义化：
+上面这个例子的主要问题是抛出的异常类型没有丰富的语义，我们必须阅读整个消息才能理解该异常的目的。另外，抛出的异常类型是基础异常，`\Exception` 是所有异常的基类，调用者很难根据异常类型去做相应的处理。解决方案是为每个出现异常情况的整体逻辑定义自定义异常类型，其**名称一定要语义化**：
 
 ```php
 class UserNotFountException extends RuntimeException
@@ -40,7 +40,7 @@ class UserNotFountException extends RuntimeException
 throw new UserNotFountException('User with the ID: ' . $userId . ' does not exist');
 ```
 
-建议在 [SPL 异常类](https://www.php.net/manual/en/spl.exceptions.php#spl.exceptions.tree) 基础之上创建自定义异常类型。因为这可以为我们的异常类型提供更加丰富的语义，捕获异常时将变得更加灵活。
+一定要在 **[SPL 异常类](https://www.php.net/manual/en/spl.exceptions.php#spl.exceptions.tree) 基础之上创建自定义异常类型**，不要再使用 `\Exception`。因为这可以为我们的异常类型提供更加丰富的语义，捕获异常时将变得更加灵活。
 
 更好了？这是肯定的，但是离完美还很远。
 
@@ -297,9 +297,26 @@ class UserController extends BaseController
 }
 ```
 
-这种解决方案的问题在于，将异常转换为合适的错误响应的逻辑可能会变得越来越复杂，并且我们要为每一个 action 编写这样类似的代码，不累吗？此外，我们也不想暴露从应用程序较低层引发的异常消息，如数据库连接错误，所以我们需要一些过滤逻辑。
+这种解决方案的问题在于，将异常转换为合适的错误响应的逻辑可能会变得越来越复杂，导致维护困难，并且我们要为每一个 action 编写这样类似的代码，导致代码重复，此外，我们也不想暴露从应用程序较低层引发的异常消息，如数据库连接错误，所以我们需要一些过滤逻辑。
 
-其实我们需要一个异常处理中心来进行集中处理异常。这里推荐使用 [whoops](https://github.com/filp/whoops) 或 [BooBoo](https://github.com/thephpleague/booboo)。
+其实我们需要一个异常处理中心来进行集中处理异常。我们可以通过覆盖 PHP 的默认错误处理程序构建您自己的：
+
+```php
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    if (! (error_reporting() & $errno)) {
+        return;
+    }
+
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+});
+
+set_exception_handler(function ($exception) {
+    //log exception
+    //display exception info
+});
+```
+
+或使用一些现有的解决方案，如 [whoops](https://github.com/filp/whoops) 或 [BooBoo](https://github.com/thephpleague/booboo)。
 
 这里以 whoops 为例，我们看下如何使用，我们首先创建了一个工厂，将错误处理工厂注册到容器中，通过容器获取到 whoops 对象，并执行 `register()` 方法：
 
