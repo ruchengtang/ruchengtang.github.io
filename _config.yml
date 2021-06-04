@@ -74,7 +74,8 @@ ba_track_id: 0b85088fde8f4e2bd254f6f367c0cab5
 ga_track_id: 'UA-96058030-1'            # Format: UA-xxxxxx-xx
 ga_domain: ruchengtang.github.io
 
-
+#Baidu search
+baidu_site_verification: 'code-EeJplLTRH9'
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.

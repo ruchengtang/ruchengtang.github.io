@@ -32,6 +32,10 @@
     <meta property="og:url" content="{{ site.url }}{{ page.url }}">
     <meta property="og:site_name" content="{{ site.SEOTitle }}">
 
+    {% if site.baidu_site_verification %}
+    <meta name="baidu-site-verification" content="{{ site.baidu_site_verification }}" />
+    {% endif %}
+
     <title>{% if page.title %}{{ page.title }} - {{ site.SEOTitle }}{% else %}{{ site.SEOTitle }}{% endif %}</title>
 
     <!-- Web App Manifest -->
