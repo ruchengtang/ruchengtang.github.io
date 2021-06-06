@@ -23,6 +23,7 @@ if (!$user) {
 
 使用异常没有这么简单。
 
+
 自定义异常类型
 ------------
 
@@ -43,6 +44,7 @@ throw new UserNotFountException('User with the ID: ' . $userId . ' does not exis
 一定要在 **[SPL 异常类](https://www.php.net/manual/en/spl.exceptions.php#spl.exceptions.tree) 基础之上创建自定义异常类型**，不要再使用 `\Exception`。因为这可以为我们的异常类型提供更加丰富的语义，捕获异常时将变得更加灵活。
 
 更好了？这是肯定的，但是离完美还很远。
+
 
 格式化异常消息
 ------------
@@ -69,6 +71,7 @@ throw UserNotFoundException::forUserId($userId);
 ```
 
 如果想更详细地了解格式异常消息，可以阅读 Ross Tuck 写的 [《格式化异常消息》](https://www.rosstuck.com/formatting-exception-messages) 这篇文章。
+
 
 内聚异常
 -------
@@ -136,6 +139,7 @@ class UserNotFoundException extends RuntimeException
 
 现在变得更有意义了，比如我们想尝试给这两种异常应用不同的 HTTP 状态码（分别为 400 和 404）。
 
+
 提供上下文
 --------
 
@@ -197,6 +201,7 @@ final class ApiNotAvailable extends \Exception implements ExceptionInterface
 }                                                          
 ```
 
+
 异常码
 -----
 
@@ -229,6 +234,7 @@ class UserNotFoundException extends RuntimeException
 ```
 
 推荐将异常码放到单个类中集中进行管理，我们可以使用这些异常码来映射 HTTP 状态码。处理 HTTP 状态码，还有一种方式，您可以先思考下？本文后面的内容会介绍到。
+
 
 组件级异常
 ---------
@@ -270,6 +276,7 @@ class UserNotFoundException extends RuntimeException implements ExceptionInterfa
 ```
 
 我们仅仅需要在每个异常命名空间下创建一个 `ExceptionInterface` 接口，然后让自定义异常类去继承。如 Controllers、Repositories 等等。这为我们的调用者捕获异常提供了丰富地层级。
+
 
 错误处理
 -------
@@ -499,6 +506,56 @@ final class ErrorHandleFactory
 ```
 
 怎么样？使用错误处理中心去管理维护我们的异常很灵活吧。
+
+
+测试异常行为
+----------
+
+对程序进行负面测试（Negative testing），可以确保应用程序能够处理不当的用户行为。通常我们是怎样测试异常的呢？PHPUNIT 可以通过 `@expectException` 注释或 `expectException()` 方法来对异常进行测试，示例：
+
+```php
+class CNYTest extends TestCase
+{
+    /**
+     * @dataProvider emptyCnyProvider
+     */
+    public function testConvertOrFailWithEmptyCny($value)
+    {
+        $cny = new CNY();
+
+        $this->expectException(InvalidArgumentException::class);
+ 
+        $cny->convertOrFail($value);
+    }
+```
+
+PHPUnit 还介绍了 [另一种对异常进行测试的方法](https://phpunit.de/manual/4.5/zh_cn/writing-tests-for-phpunit.html#writing-tests-for-phpunit.exceptions.examples.ExceptionTest4.php) 示例：
+
+```php
+class CNYTest extends TestCase
+{
+    /**
+     * @dataProvider emptyCnyProvider
+     */
+    public function testConvertOrFailWithEmptyCny($value)
+    {
+        $cny = new CNY();
+
+        try {
+            $cny->convertOrFail($value);
+
+            $this->fail('Exception should have been raised!');
+        } catch (InvalidArgumentException $e) {
+            $this->assertSame(ErrorCode::INVALID_ARGUMENT_EMPTY_CNY, $e->getCode());
+            $this->assertSame('Cny must not be empty!', $e->getMessage());
+            $this->assertSame((string)$value, $e->originCny());
+            $this->assertSame(false, is_null($e->cny()));
+        }
+    }
+```
+
+推荐使用第二种方式来测试异常，因为它符合 ARRANGE-ACT-ASSERT 测试原则并且这种写法对异常进行断言更加灵活，其次代码更直观。
+
 
 参考文章
 -------
