@@ -6,7 +6,9 @@ author: "Rucheng Tang"
 header-style: text
 hidden: false
 tags:
+  - PHP
   - PHP 异常
+  - 最佳实践
 ---
 
 为什么要使用异常？ [《PHP 错误处理》]({% post_url 2021-05-31-handling-exceptional-conditions-in-php %}) 这篇文章详细地介绍了在什么情况下应该使用异常，什么情况下使用特例模式替代异常。很多人也许会觉得使用异常很简单，直接 `throw new` 一个异常即可，事实并非如此，这就是这篇文章要讨论的话题，如何组织异常，避免我们混乱使用异常，从一个噩梦（检查泛滥）到另一个噩梦（异常混乱）。
