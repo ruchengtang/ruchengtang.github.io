@@ -154,6 +154,15 @@ console.log(array); //Result: Array [ div.moon, div.moon ]
 
 使用这种技术，我们可以将任何类似数组的结构转换为数组，从而可以访问所有数组函数。
 
+再例如将遍历器转为数组：
+
+```javascript
+let string = 'test1test2test3';
+let regex = /t(e)(st(\d?))/g;
+
+let result = [...string.matchAll(regex)];
+```
+
 
 将参数作为数组进行传递
 -------------------
