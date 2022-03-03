@@ -236,23 +236,27 @@ $users = User::withLastLoginDate()->get();
 
 一种选择是简单地创建第二个子查询 scope：
 
-```php
+{% highlight php %}
+{% raw %}
 $users = User::withLastLoginDate()
     ->withLastLoginIpAddress()
     ->get();
 
 {{ $user->last_login_at->format('M j, Y \a\t g:i a') }}
 ({{ $user->last_login_ip_address }})
-```
+{% endraw %}
+{% endhighlight %}
 
 而且，这肯定会奏效。但是，如果有很多属性，这可能会变得乏味。使用实际的登录模型实例不是更好吗？特别是如果该模型具有内置的附加功能，例如访问器或关系。像这样的东西：
 
-```php
+{% highlight php %}
+{% raw %}
 $users = User::withLastLogin()->get();
 
 {{ $user->lastLogin->created_at->format('M j, Y \a\t g:i a') }}
 ({{ $user->lastLogin->ip_address }})
-```
+{% endraw %}
+{% endhighlight %}
 
 输入动态关系。
 
